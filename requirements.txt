@@ -1,0 +1,5 @@
+Django==1.9.6
+django-jet==0.1.4
+django-tastypie==0.13.3
+Pillow==3.0.0
+Wand==0.4.3

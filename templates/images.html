@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block content %}
+    {% for i in images %}
+ <div class="col-md-4">
+      <a href="/coordinates/{{ i.id }}/" class="thumbnail">
+        <img src="{{ i.image }}" alt="Cinque Terre" style="width:150px;height:150px">
+      </a>
+    </div>    {% endfor %}
+{% endblock %}
