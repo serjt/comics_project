@@ -1,0 +1,195 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		.panel{
+			background-color: rgba(255,255,255,0.5);
+			position: fixed;
+			height: 200px;
+			width: 400px;
+			z-index: 9;
+			right: 0;
+		}
+		.inputs input{
+			width: 80%;
+		}
+	</style>
+	<title></title>
+
+</head>
+<body>
+	<div class="panel" id="panel">
+		<button onclick="addLayer()" id="addlayer">Add Layer</button>
+		<div class="inputs">
+			<br>
+		</div>
+        <form method="POST">
+            {% csrf_token %}
+            <textarea name="coordinatesjson" id="coordinatesjson" cols="30" rows="10" style=""></textarea>
+            <input type="submit" id="submit" value="Huyaak!!!!">
+        </form>
+
+
+	</div>
+	<canvas id="c"></canvas>
+	<img src="{{ image.image }}" id="image" style="display: none;">
+
+	<script type="text/javascript" src="{% static 'js/fabric.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<script type="text/javascript">
+
+		var image = document.getElementById('image');
+		var rleft = 0;
+		var rtop = 0;
+		var rbottom = 0;
+		var canvas = new fabric.Canvas('c');
+		canvas.setHeight(image.height/2);
+		canvas.setWidth(image.width/2);
+
+		var piselected = 0;
+
+		canvas.setBackgroundImage('{{ image.image }}', canvas.renderAll.bind(canvas), {
+			backgroundImageOpacity: 0.5,
+			height: image.height/2,
+			width: image.width/2
+		});
+
+		var rects = [];
+
+		var i = 1;
+		function addLayer() {
+			var r = Math.floor(Math.random() * 255) + 0;
+			var g = Math.floor(Math.random() * 255) + 0;
+			var b = Math.floor(Math.random() * 255) + 0;
+			var rect = new fabric.Rect({
+				id: i,
+				height: 100,
+				width: 100,
+				fill: 'rgba('+r+','+g+','+b+',0.5)',
+				borderColor: 'black',
+				padding: 0
+			});
+			var text = new fabric.Text(i.toString(), {
+				fill: '#000',
+				left: rect.width/2.3,
+				top: rect.height/2.3,
+				fontSize: 24
+			});
+			var group = new fabric.Group([ rect, text ], {
+				id: i,
+				left: 100,
+				top: 100,
+			});
+			rects[i] = group;
+			console.log(rect);
+			canvas.add(group);
+			var txt = $("<p>"+i+": <input type='text' name='coor' id='c"+i+"'></p>");
+			$('.inputs').append(txt)
+			piselected = document.getElementById("c"+i);
+			canvas.setActiveObject(rects[i]);
+			i++;
+		}
+         $("#submit").click(function(e){
+             e.preventDefault();
+             var csrftoken = getCookie('csrftoken');
+            if (document.getElementsByName('coor').length>0){
+                for(var z = 0; z <= document.getElementsByName('coor').length-1; z++){
+                    var v = "{" + document.getElementsByName('coor')[z].value + "}";
+                    console.log(v);
+                    if (z==0){
+                        $('#coordinatesjson').append('[' + v);
+                    }
+                    if (z < document.getElementsByName('coor').length-1){
+                        $('#coordinatesjson').append(v + ',');
+                    }
+                    else {
+                        $('#coordinatesjson').append(v + ']');
+                    }
+
+                }
+            }
+             var coordinates = $('#coordinatesjson').val();
+             $.ajax({
+                   url : window.location.href, // the endpoint,commonly same url
+                   type : "POST", // http method
+                   data : { csrfmiddlewaretoken : csrftoken,
+                   coordinates : coordinates
+             }, // data sent with the post request
+
+             // handle a successful response
+             success : function(json) {
+             console.log(json); // another sanity check
+             //On success show the data posted to server as a message
+             alert(json['coordinates']);
+             },
+
+             // handle a non-successful response
+             error : function(xhr,errmsg,err) {
+             console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+             }
+             });
+        })
+		canvas.on('object:moving', function(event) {
+			piselected = document.getElementById("c"+canvas.getActiveObject().get("id"));
+			if (canvas.getActiveObject().left<0) {
+				rleft = 0;
+			} else {
+				rleft = canvas.getActiveObject().left;
+			}
+			if (canvas.getActiveObject().top<0) {
+				rtop = 0;
+			} else {
+				rtop = canvas.getActiveObject().top;
+			}
+			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
+			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
+		});
+		canvas.on('object:selected', function(event) {
+			piselected = document.getElementById("c"+canvas.getActiveObject().get("id"));
+			if (canvas.getActiveObject().left<0) {
+				rleft = 0;
+			} else {
+				rleft = canvas.getActiveObject().left;
+			}
+			if (canvas.getActiveObject().top<0) {
+				rtop = 0;
+			} else {
+				rtop = canvas.getActiveObject().top;
+			}
+			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
+			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
+		});
+		canvas.on('object:scaling', function(event) {
+			piselected = document.getElementById("c"+canvas.getActiveObject().get("id"));
+			if (canvas.getActiveObject().left<0) {
+				rleft = 0;
+			} else {
+				rleft = canvas.getActiveObject().left;
+			}
+			if (canvas.getActiveObject().top<0) {
+				rtop = 0;
+			} else {
+				rtop = canvas.getActiveObject().top;
+			}
+			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
+			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
+		});
+        function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+               var cookie = jQuery.trim(cookies[i]);
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) == (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+             }
+          }
+      }
+ return cookieValue;
+}
+	</script>
+</body>
+</html>
