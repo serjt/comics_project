@@ -22,10 +22,10 @@ class Comics(models.Model):
     def save(self, *args, **kwargs):
         super(Comics, self).save()
         img = Image(filename=self.pdf._get_path())
-        img.save(filename=settings.BASE_DIR+'/static_in_env/media_root/images/temp-%s-%s.jpg' % (
-           self.id, self.name))
+        img.save(filename=settings.BASE_DIR + '/static_in_env/media_root/images/temp-%s-%s.jpg' % (
+            self.id, self.name))
         for i in range(len(img.sequence)):
-            image = ComicsImage(comics_id=self.id,image='/media/images/temp-%s-%s-%s.jpg' % (self.id,self.name,i))
+            image = ComicsImage(comics_id=self.id, image='/media/images/temp-%s-%s-%s.jpg' % (self.id, self.name, i))
             image.save()
 
 
@@ -38,8 +38,8 @@ class ComicsImage(models.Model):
 
 
 class Coordinate(models.Model):
-    x = models.DecimalField(max_digits=100,decimal_places=2)
-    y = models.DecimalField(max_digits=100,decimal_places=2)
-    h = models.DecimalField(max_digits=100,decimal_places=2)
-    w = models.DecimalField(max_digits=100,decimal_places=2)
-    image = models.ForeignKey(ComicsImage,null=True)
+    x = models.DecimalField(max_digits=1000, decimal_places=2)
+    y = models.DecimalField(max_digits=1000, decimal_places=2)
+    h = models.DecimalField(max_digits=1000, decimal_places=2)
+    w = models.DecimalField(max_digits=1000, decimal_places=2)
+    image = models.ForeignKey(ComicsImage, null=True)

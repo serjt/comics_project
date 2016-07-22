@@ -53,7 +53,6 @@ def coordinates(request, image_id):
             # Returning same data back to browser.It is not possible with Normal submit
             print data
             return JsonResponse(data)
-
             # Get goes here
     #############################################################################
     return render_to_response('coordinates.html', context)
