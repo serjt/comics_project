@@ -21,7 +21,7 @@ class Comics(models.Model):
 
     def save(self, *args, **kwargs):
         super(Comics, self).save()
-        img = Image(filename=self.pdf._get_path())
+        img = Image(filename=self.pdf._get_path(),resolution=200)
         img.save(filename=settings.BASE_DIR + '/static_in_env/media_root/images/temp-%s-%s.jpg' % (
             self.id, self.name))
         for i in range(len(img.sequence)):
