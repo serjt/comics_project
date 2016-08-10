@@ -3,34 +3,36 @@ from .models import *
 from tastypie import fields
 
 
-class ComicsResource(ModelResource):
+class CoordinateResource(ModelResource):
     class Meta:
-        queryset = Comics.objects.all()
-        resource_name = 'comics'
-        excludes = 'pdf'.split()
-        filtering = {
-            'id':ALL_WITH_RELATIONS,
-        }
+        queryset = Coordinate.objects.all()
+        resource_name = 'coordinates'
 
 
 class ImageResource(ModelResource):
-    comics = fields.ForeignKey(ComicsResource, 'comics', null=True)
+    coordinates = fields.ManyToManyField(CoordinateResource, 'coordinates', null=True, full=True)
 
     class Meta:
         queryset = ComicsImage.objects.all()
         resource_name = 'image'
         filtering = {
             'id': ALL_WITH_RELATIONS,
-            'comics':ALL_WITH_RELATIONS
         }
 
 
-class CoordinateResource(ModelResource):
-    image = fields.ForeignKey(ImageResource, 'image', null=True)
+class DataResource(ModelResource):
+    class Meta:
+        queryset = UploadComics.objects.all()
+        resource_name = 'general'
+
+
+class ComicsResource(ModelResource):
+    general = fields.OneToOneField(DataResource, 'general', null=True, full=True)
+    pages = fields.ManyToManyField(ImageResource, 'pages', null=True, full=True)
 
     class Meta:
-        queryset = Coordinate.objects.all()
-        resource_name = 'coordinates'
+        queryset = Comics.objects.all()
+        resource_name = 'comics'
         filtering = {
-            'image': ALL_WITH_RELATIONS
+            'id': ALL_WITH_RELATIONS,
         }

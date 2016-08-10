@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block content %}
-    {% for i in images %}
+    {% for i in comics.pages.all %}
  <div class="col-md-4">
       <a href="/coordinates/{{ i.id }}/" class="thumbnail">
         <img src="{{ i.image }}" alt="Cinque Terre" style="width:150px;height:150px">

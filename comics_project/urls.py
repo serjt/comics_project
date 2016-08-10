@@ -23,6 +23,7 @@ v1 = Api(api_name='v1')
 v1.register(CoordinateResource())
 v1.register(ImageResource())
 v1.register(ComicsResource())
+v1.register(DataResource())
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^admin/', admin.site.urls),
