@@ -17,11 +17,17 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
-
+from comic.api import *
+from tastypie.api import Api
+v1 = Api(api_name='v1')
+v1.register(CoordinateResource())
+v1.register(ImageResource())
+v1.register(ComicsResource())
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^admin/', admin.site.urls),
     url(r'^$','comic.views.home'),
+    url(r'^api/',include(v1.urls)),
     url(r'^images/(?P<comics_id>\d+)/$','comic.views.images'),
     url(r'^coordinates/(?P<image_id>\d+)/$','comic.views.coordinates'),
     url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_ROOT}),

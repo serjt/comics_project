@@ -6,7 +6,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+.idea
 # Distribution / packaging
 .Python
 env/
@@ -89,3 +89,4 @@ ENV/
 .ropeproject
 
 # Created by .ignore support plugin (hsz.mobi)
+db.sqlite3

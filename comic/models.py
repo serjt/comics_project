@@ -34,7 +34,7 @@ class ComicsImage(models.Model):
     comics = models.ForeignKey(Comics)
 
     def __unicode__(self):
-        return self.comics.name
+        return str(self.id)
 
 
 class Coordinate(models.Model):

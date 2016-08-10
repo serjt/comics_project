@@ -43,16 +43,17 @@ def coordinates(request, image_id):
         'image': ComicsImage.objects.get(id=image_id),
         'coordinates': Coordinate.objects.filter(image_id=image_id)
     }
-    ###############################################################################
     if request.method == 'POST':
-        # POST goes here . is_ajax is must to capture ajax requests. Beginner's pit.
         if request.is_ajax():
-            # Always use get on request.POST. Correct way of querying a QueryDict.
             coordinatez = request.POST.get('coordinates')
-            data = {"coordinates": coordinatez}
-            # Returning same data back to browser.It is not possible with Normal submit
-            print data
-            return JsonResponse(data)
-            # Get goes here
-    #############################################################################
+            arr = coordinatez.split('|')
+            array = arr[1:len(arr)-1]
+            for i in array:
+                coordinate = i.split(' ')
+                x = float(coordinate[0].split(':')[1])
+                y = float(coordinate[1].split(':')[1])
+                w = float(coordinate[2].split(':')[1])
+                h = float(coordinate[3].split(':')[1])
+                coor = Coordinate.objects.create(x=x,y=y,w=w,h=h,image_id = image_id)
+                coor.save()
     return render_to_response('coordinates.html', context)

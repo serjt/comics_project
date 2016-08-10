@@ -95,16 +95,16 @@
              var csrftoken = getCookie('csrftoken');
             if (document.getElementsByName('coor').length>0){
                 for(var z = 0; z <= document.getElementsByName('coor').length-1; z++){
-                    var v = "{" + document.getElementsByName('coor')[z].value + "}";
+                    var v = document.getElementsByName('coor')[z].value + "|";
                     console.log(v);
                     if (z==0){
-                        $('#coordinatesjson').append('[' + v);
+                        $('#coordinatesjson').append(v);
                     }
                     if (z < document.getElementsByName('coor').length-1){
                         $('#coordinatesjson').append(v + ',');
                     }
                     else {
-                        $('#coordinatesjson').append(v + ']');
+                        $('#coordinatesjson').append(v);
                     }
 
                 }
@@ -143,7 +143,8 @@
 				rtop = canvas.getActiveObject().top;
 			}
 			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
-			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
+			piselected.value = 'x:' + rleft*2 + ' y:' + rtop*2 + ' w:' + canvas.getActiveObject().getWidth()*2  + ' h:' +
+                    canvas.getActiveObject().getHeight()*2;
 		});
 		canvas.on('object:selected', function(event) {
 			piselected = document.getElementById("c"+canvas.getActiveObject().get("id"));
@@ -158,8 +159,9 @@
 				rtop = canvas.getActiveObject().top;
 			}
 			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
-			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
-		});
+piselected.value = 'x:' + rleft*2 + ' y:' + rtop*2 + ' w:' + canvas.getActiveObject().getWidth()*2  + ' h:' +
+                    canvas.getActiveObject().getHeight()*2;
+        });
 		canvas.on('object:scaling', function(event) {
 			piselected = document.getElementById("c"+canvas.getActiveObject().get("id"));
 			if (canvas.getActiveObject().left<0) {
@@ -173,7 +175,8 @@
 				rtop = canvas.getActiveObject().top;
 			}
 			console.log('"x": ' + '"' + rleft*2 + '"' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"');
-			piselected.value = '"x": ' + '"' + rleft*2 + '""' + ', "y": ' + '"' + rtop*2 + '"' + ', "w": ' + '"' + canvas.getActiveObject().getWidth()*2 + '"' + ', "h": ' + '"' + canvas.getActiveObject().getHeight()*2 + '"';
+piselected.value = 'x:' + rleft*2 + ' y:' + rtop*2 + ' w:' + canvas.getActiveObject().getWidth()*2  + ' h:' +
+                    canvas.getActiveObject().getHeight()*2;
 		});
         function getCookie(name) {
           var cookieValue = null;
