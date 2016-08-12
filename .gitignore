@@ -90,3 +90,4 @@ ENV/
 
 # Created by .ignore support plugin (hsz.mobi)
 db.sqlite3
+static_in_env
