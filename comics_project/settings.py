@@ -133,3 +133,5 @@ STATICFILES_DIRS = (
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static_in_env", "media_root")
+
+JET_SIDE_MENU_COMPACT = True
