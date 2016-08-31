@@ -1,3 +1,4 @@
+# coding=utf-8
 import json
 import os
 from django import forms
@@ -5,6 +6,8 @@ from django.forms import ModelForm
 from django.contrib import admin
 from django.forms.widgets import TextInput
 from django.template import Template, Context
+from imagekit.admin import AdminThumbnail
+
 from .models import *
 from comics_project.settings import BASE_DIR
 
@@ -24,7 +27,9 @@ class ComicsSujetWidget(TextInput):
 
 
 class ComicsImageForm(ModelForm):
-    coordinates_json = forms.CharField(widget=ComicsSujetWidget())
+    coordinates_json = forms.CharField(widget=ComicsSujetWidget(),
+                                       label='Координаты (не редактировать)',
+                                       required=False)
 
     def __init__(self, *args, **kwargs):
         super(ComicsImageForm, self).__init__(*args, **kwargs)
@@ -34,30 +39,45 @@ class ComicsImageForm(ModelForm):
 class ComicsImageAdmin(admin.ModelAdmin):
     form = ComicsImageForm
     exclude = ['coordinates', 'image']
+    list_display = '__unicode__ done'.split()
 
     def save_model(self, request, obj, form, change):
         comics_image = ComicsImage.objects.get(id=obj.id)
-        coordinates = json.loads(request.POST.get('coordinates_json'))
-        print(coordinates)
+        try:
+            coordinates = json.loads(request.POST.get('coordinates_json'))
+        except:
+            pass
+        try:
+            comics_image.coordinates.clear()
+        except:
+            pass
+        try:
+            for item in coordinates:
+                print(item)
+                coordinate = Coordinate()
+                coordinate.x = item['x']
+                coordinate.y = item['y']
+                coordinate.w = item['w']
+                coordinate.h = item['h']
 
-        for item in coordinates:
-            print(item)
-            coordinate = Coordinate()
-            coordinate.x = item['x']
-            coordinate.y = item['y']
-            coordinate.w = item['w']
-            coordinate.h = item['h']
+                coordinate.save()
+                comics_image.coordinates.add(coordinate)
 
-            coordinate.save()
-            comics_image.coordinates.add(coordinate)
-
-        comics_image.save()
-
+            comics_image.save()
+        except:
+            pass
         super(ComicsImageAdmin, self).save_model(request, obj, form, change)
 
 
+class UploadComicsAdmin(admin.ModelAdmin):
+    list_display = 'name pdf image_img'.split()
+
+    def image_img(self, obj):
+        return '<img src="%s" style = "width:100px;" />' % obj.cover.url
+
+    image_img.allow_tags = True
+
+
 # Register your models here.
-admin.site.register(Comics)
 admin.site.register(ComicsImage, ComicsImageAdmin)
-admin.site.register(Coordinate)
-admin.site.register(UploadComics)
+admin.site.register(UploadComics, UploadComicsAdmin)

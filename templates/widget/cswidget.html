@@ -4,12 +4,12 @@
 {% else %}
     <link href="{% static 'css/jquery.modal.min.css' %}" rel="stylesheet" type="text/css"/>
     <textarea id="{{ attrs.id }}" name="{{ name }}"></textarea>
-    <a href="#ex1" rel="modal:open">Edit sujet</a>
+    <a href="#ex1" rel="modal:open">Редактировать кадры</a>
 
-    <div id="ex1" style="display:none;">
-        <button id="addlayer">Add Layer</button>
+    <div id="ex1" style="display:none;width: 700px;padding: 20px">
+        <button id="addlayer">Добавить слой</button>
         <canvas id="canvas"></canvas>
-        <img src="{{ object.image }}" id="image" style="display: none">
+        <img src="{{ object.image }}" id="image" style="display: none;">
     </div>
 
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
@@ -27,6 +27,11 @@
         canvas.setWidth(image.width / 4);
 
         $('#addlayer').on('click', addLayer);
+        $(document).keyup(function (e) {
+            if (e.keyCode == 46) {
+                deleteLayer(e)
+            }
+        });
 
         canvas.setBackgroundImage('{{ object.image }}', canvas.renderAll.bind(canvas), {
             backgroundImageOpacity: 0.5,
@@ -34,8 +39,24 @@
             width: image.width / 4,
             left: 0,
             top: 0,
-            originX: 'center'
+            {#            originX: 'center'#}
         });
+
+        function deleteLayer(e) {
+            e.preventDefault();
+            var activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                i = rectangles.indexOf(activeObject);
+                rectangles.splice(i, 1);
+                canvas.remove(canvas.getActiveObject());
+                counter--;
+
+                for(i=0;i<rectangles.length;i++){
+                    var txt = rectangles[i]._objects[1];
+                    txt.text = (i+1).toString();
+                }
+            }
+        }
 
         function setJsonToField() {
             var jsonArray = [];
@@ -60,7 +81,7 @@
             x = (rectangle.left < 0) ? 0 : rectangle.left;
             y = (rectangle.top < 0) ? 0 : rectangle.top;
 
-            return buildProperties(x, y, rectangle.getWidth() * 3, rectangle.getHeight() * 3);
+            return buildProperties(x, y, rectangle.getWidth() * 4, rectangle.getHeight() * 4);
         }
 
         function addLayer(e) {
@@ -73,7 +94,7 @@
                 id: counter,
                 height: 100,
                 width: 100,
-                fill: 'rgba(' + r + ',' + g + ',' + b + ',0.5)',
+                fill: 'rgba(' + r + ',' + g + ',' + b + ',0.7)',
                 borderColor: 'black',
                 padding: 0
             });

@@ -27,10 +27,10 @@ v1.register(DataResource())
 urlpatterns = [
     url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
     url(r'^admin/', admin.site.urls),
-    url(r'^$','comic.views.home'),
+    # url(r'^$','comic.views.home'),
     url(r'^api/',include(v1.urls)),
-    url(r'^images/(?P<comics_id>\d+)/$','comic.views.images'),
-    url(r'^coordinates/(?P<image_id>\d+)/$','comic.views.coordinates'),
+    # url(r'^images/(?P<comics_id>\d+)/$','comic.views.images'),
+    # url(r'^coordinates/(?P<image_id>\d+)/$','comic.views.coordinates'),
     url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_ROOT}),
     url(r'^media/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.MEDIA_ROOT}),
 ]
