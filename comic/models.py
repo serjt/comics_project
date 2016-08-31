@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import unicode_literals
 from django.conf import settings
 from django.db import models
@@ -19,17 +20,28 @@ class Coordinate(models.Model):
 
 
 class ComicsImage(models.Model):
-    image = models.CharField(max_length=200)
-    coordinates = models.ManyToManyField(Coordinate, null=True, blank=True)
+    class Meta:
+        verbose_name = 'изображение'
+        verbose_name_plural = 'картинки'
+
+    image = models.CharField(max_length=200,verbose_name='изображение')
+    coordinates = models.ManyToManyField(Coordinate, blank=True,verbose_name='координаты')
+    done = models.BooleanField(default=False, verbose_name='Сделано')
 
     def __unicode__(self):
-        return str(self.id)
+        return 'Комикс - %s, страница - %s' % (str(self.image.split('-')[2]),
+                                               self.image.split('-')[3].split('.')[0])
 
 
 class UploadComics(models.Model):
-    name = models.CharField(max_length=100)
+    class Meta:
+        verbose_name = 'комикс'
+        verbose_name_plural = 'комиксы'
+
+    name = models.CharField(max_length=100, verbose_name='комикс')
     pdf = models.FileField(upload_to=file_upload_to, null=True, blank=True)
-    cover = models.ImageField(upload_to=file_upload_to, null=True, blank=True)
+    cover = models.ImageField(upload_to=file_upload_to, null=True, blank=True,
+                              verbose_name='обложка')
 
     def save(self, *args, **kwargs):
         super(UploadComics, self).save()
@@ -45,8 +57,8 @@ class UploadComics(models.Model):
 
 
 class Comics(models.Model):
-    general = models.OneToOneField(UploadComics,null=True)
-    pages = models.ManyToManyField(ComicsImage, null=True, blank=True)
+    general = models.OneToOneField(UploadComics, null=True)
+    pages = models.ManyToManyField(ComicsImage, blank=True)
 
     def __unicode__(self):
         return self.general.name

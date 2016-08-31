@@ -1,0 +1,130 @@
+{% load static %}
+{% if new %}
+    Unable to render sujet builder on new instance
+{% else %}
+    <link href="{% static 'css/jquery.modal.min.css' %}" rel="stylesheet" type="text/css"/>
+    <textarea id="{{ attrs.id }}" name="{{ name }}"></textarea>
+    <a href="#ex1" rel="modal:open">Редактировать кадры</a>
+
+    <div id="ex1" style="display:none;width: 700px;padding: 20px">
+        <button id="addlayer">Добавить слой</button>
+        <canvas id="canvas"></canvas>
+        <img src="{{ object.image }}" id="image" style="display: none;">
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/fabric.js' %}"></script>
+    <script src="{% static 'js/jquery.modal.min.js' %}"></script>
+    <script type="text/javascript">
+
+        var image = document.getElementById('image');
+        var canvas = new fabric.Canvas('canvas');
+        var inputField = $('#{{ attrs.id }}');
+        var rectangles = [];
+        var counter = 1;
+
+        canvas.setHeight(image.height / 4);
+        canvas.setWidth(image.width / 4);
+
+        $('#addlayer').on('click', addLayer);
+        $(document).keyup(function (e) {
+            if (e.keyCode == 46) {
+                deleteLayer(e)
+            }
+        });
+
+        canvas.setBackgroundImage('{{ object.image }}', canvas.renderAll.bind(canvas), {
+            backgroundImageOpacity: 0.5,
+            height: image.height / 4,
+            width: image.width / 4,
+            left: 0,
+            top: 0,
+            {#            originX: 'center'#}
+        });
+
+        function deleteLayer(e) {
+            e.preventDefault();
+            var activeObject = canvas.getActiveObject();
+            if (activeObject) {
+                i = rectangles.indexOf(activeObject);
+                rectangles.splice(i, 1);
+                canvas.remove(canvas.getActiveObject());
+                counter--;
+
+                for(i=0;i<rectangles.length;i++){
+                    var txt = rectangles[i]._objects[1];
+                    txt.text = (i+1).toString();
+                }
+            }
+        }
+
+        function setJsonToField() {
+            var jsonArray = [];
+
+            for (i = 0; i < rectangles.length; i++) {
+                jsonArray.push(buildRectangleObjectProperties(rectangles[i]))
+            }
+
+            $(inputField).val(JSON.stringify(jsonArray))
+        }
+
+        function buildProperties(x, y, w, h) {
+            return {
+                x: x,
+                y: y,
+                w: w,
+                h: h
+            }
+        }
+
+        function buildRectangleObjectProperties(rectangle) {
+            x = (rectangle.left < 0) ? 0 : rectangle.left;
+            y = (rectangle.top < 0) ? 0 : rectangle.top;
+
+            return buildProperties(x, y, rectangle.getWidth() * 4, rectangle.getHeight() * 4);
+        }
+
+        function addLayer(e) {
+            e.preventDefault();
+
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            var rect = new fabric.Rect({
+                id: counter,
+                height: 100,
+                width: 100,
+                fill: 'rgba(' + r + ',' + g + ',' + b + ',0.7)',
+                borderColor: 'black',
+                padding: 0
+            });
+            var text = new fabric.Text(counter.toString(), {
+                fill: '#000',
+                left: rect.width / 2.3,
+                top: rect.height / 2.3,
+                fontSize: 24
+            });
+            var group = new fabric.Group([rect, text], {
+                id: counter,
+                left: 100,
+                top: 100
+            });
+            rectangles.push(group);
+            canvas.add(group);
+
+            canvas.setActiveObject(rectangles[counter - 1]);
+            counter++;
+        }
+
+        canvas.on('object:moving', function () {
+            setJsonToField()
+        });
+        canvas.on('object:selected', function () {
+            setJsonToField()
+        });
+        canvas.on('object:scaling', function () {
+            setJsonToField()
+        });
+
+    </script>
+{% endif %}
