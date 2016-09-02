@@ -18,6 +18,10 @@ class Coordinate(models.Model):
     h = models.DecimalField(max_digits=1000, decimal_places=2)
     w = models.DecimalField(max_digits=1000, decimal_places=2)
 
+    def __unicode__(self):
+        return 'x:%s, y:%s, h:%s, w:%s'%(str(self.x),str(self.y),str(self.h)
+                                         ,str(self.w))
+
 
 class ComicsImage(models.Model):
     class Meta:

@@ -36,15 +36,20 @@ class ComicsImageForm(ModelForm):
         self.fields['coordinates_json'].widget.form_instance = self
 
 
+class MembershipInline(admin.TabularInline):
+    model = ComicsImage.coordinates.through
+
+
 class ComicsImageAdmin(admin.ModelAdmin):
     form = ComicsImageForm
-    exclude = ['coordinates']
+    exclude = ['coordinates','image']
     list_display = 'image_img __unicode__ done'.split()
 
     def image_img(self, obj):
         return '<img src="%s" style = "width:100px;" />' % obj.image
 
     image_img.allow_tags = True
+    inlines = [MembershipInline]
 
     def save_model(self, request, obj, form, change):
         comics_image = ComicsImage.objects.get(id=obj.id)

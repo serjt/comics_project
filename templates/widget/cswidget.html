@@ -81,7 +81,7 @@
             x = (rectangle.left < 0) ? 0 : rectangle.left;
             y = (rectangle.top < 0) ? 0 : rectangle.top;
 
-            return buildProperties(x, y, rectangle.getWidth() * 4, rectangle.getHeight() * 4);
+            return buildProperties(x*4, y*4, rectangle.getWidth() * 4, rectangle.getHeight() * 4);
         }
 
         function addLayer(e) {
