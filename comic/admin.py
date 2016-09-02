@@ -38,8 +38,13 @@ class ComicsImageForm(ModelForm):
 
 class ComicsImageAdmin(admin.ModelAdmin):
     form = ComicsImageForm
-    exclude = ['coordinates', 'image']
-    list_display = '__unicode__ done'.split()
+    exclude = ['coordinates']
+    list_display = 'image_img __unicode__ done'.split()
+
+    def image_img(self, obj):
+        return '<img src="%s" style = "width:100px;" />' % obj.image
+
+    image_img.allow_tags = True
 
     def save_model(self, request, obj, form, change):
         comics_image = ComicsImage.objects.get(id=obj.id)
